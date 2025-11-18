@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Web Page</title>
-    <link rel="stylesheet" href="/static/style.css"
-    <script src="/static/login.js" defer></script>
+  <meta charset="UTF-8">
+  <title>Login | Instamart Mini</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+  <!-- JS -->
+  <script src="{{ url_for('static', filename='login.js') }}" defer></script>
 </head>
+
 <body class="bg-light">
   <div class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
-    <div class="card shadow-lg p-4" style="width:400px; border-radius:16px; background:#ffffffcc;">
+    <div class="card shadow-lg p-4" id="loginCard">
       <h3 class="text-center text-success fw-bold mb-4">🥦 Instamart Mini</h3>
 
-      <div class ="mb-3">
-        <input type="text" id="username" class="form-control" placeholder="Username" />
-        </div>
-        <div class ="mb-3">
-        <input type="password" id="password" class="form-control" placeholder="Password" />
-        </div>
-        <div class="d-grid">
-          <button id="loginBtn" class="btn btn-success" onclick="login()">Login</button>
-          <button class ="btn btn-outline-secondary mt-2" onclick="location.href='/register'">Register</button>
-          </div>
-          
-    <p class="text-center mt-3">
-      <small>Login as <b>user</b> to shop or <b>admin</b> to manage store.</small>
-    </p>
+      <div class="mb-3">
+        <input id="username" type="text" class="form-control" placeholder="Username">
+      </div>
+      <div class="mb-3">
+        <input id="password" type="password" class="form-control" placeholder="Password">
+      </div>
+
+      <div class="d-grid gap-2">
+        <button class="btn btn-success" onclick="login()">Login</button>
+        <button class="btn btn-outline-secondary" onclick="register()">Register</button>
+      </div>
+
+      <p class="text-center mt-3 mb-0 small">
+        Login as <b>user</b> to shop or <b>admin</b> to manage store.
+      </p>
+    </div>
   </div>
 </body>
 </html>

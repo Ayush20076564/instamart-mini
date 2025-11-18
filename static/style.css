@@ -1,171 +1,71 @@
-/* =======================
-   GLOBAL STYLING
-======================= */
+/* =====================================
+   GLOBAL THEME (green Instamart look)
+===================================== */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
+  background: linear-gradient(to bottom right, #e9f9ef, #f8f9fa);
   color: #333;
+  margin: 0;
+  padding: 0;
 }
 
-/* Navbar */
-.navbar {
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.navbar-brand {
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-.navbar .btn {
-  font-weight: 500;
-}
-
-/* Headings */
-h1, h3, h4, h5 {
-  color: #2e8b57;
-}
-
-/* Buttons */
+/* Bootstrap override: buttons and inputs */
 button, .btn {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: 0.2s ease;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 button:hover, .btn:hover {
+  transform: scale(1.05);
   opacity: 0.9;
-  transform: scale(1.03);
 }
 
-/* =======================
-   LOGIN PAGE
-======================= */
-.card {
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* =====================================
+   LOGIN PAGE CARD
+===================================== */
+#loginCard {
+  width: 400px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
-.card h3 {
+
+#loginCard h3 {
   color: #2e8b57;
+  letter-spacing: 0.5px;
 }
 
-/* Center login card */
-body.d-flex.align-items-center.justify-content-center {
-  height: 100vh !important;
-  background: linear-gradient(to bottom right, #e8f5e9, #ffffff);
-}
-
-/* =======================
-   ADMIN STORE PAGE
-======================= */
-.container {
-  max-width: 1200px;
-}
-
-/* Product cards */
-.item-card {
-  border-radius: 12px;
-  overflow: hidden;
-  transition: 0.3s;
-}
-.item-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.card-body h6 {
-  color: #333;
-  font-weight: 600;
-}
-.card-body p {
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-}
-.item-img {
-  height: 150px;
-  object-fit: cover;
-}
-
-/* Form for Add Item */
-#admin input {
-  border-radius: 6px;
-}
-
-/* =======================
-   SHOPPING / CART PAGE
-======================= */
-.item {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-.item b {
-  color: #2e8b57;
-}
-
-.cart-item {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  margin: 6px 0;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#cart b {
-  color: #2e8b57;
-}
-
-/* Checkout button */
-#checkoutBtn {
-  float: right;
-  margin-top: 10px;
-}
-
-/* =======================
-   FOOTER / MISC
-======================= */
-footer {
-  text-align: center;
-  padding: 15px;
-  color: #777;
-  font-size: 0.9rem;
-}
-footer a {
-  text-decoration: none;
-  color: #2e8b57;
-}
-footer a:hover {
-  text-decoration: underline;
-}
-
-/* Centered login box fix */
-body.bg-light {
-  background: linear-gradient(to bottom right, #e9f9ef, #f8f9fa);
-}
-
-.card {
-  border: none;
-  backdrop-filter: blur(4px);
-}
-
-.card input {
+#loginCard input {
   border-radius: 8px;
   border: 1px solid #cfcfcf;
+  padding: 10px;
+  font-size: 0.95rem;
 }
 
-.card input:focus {
-  box-shadow: 0 0 4px rgba(46,139,87,0.5);
+#loginCard input:focus {
   border-color: #2e8b57;
+  box-shadow: 0 0 5px rgba(46, 139, 87, 0.4);
 }
 
-.card button {
-  font-weight: 600;
-  transition: 0.2s;
+#loginCard .btn-success {
+  background-color: #2e8b57;
+  border: none;
 }
 
-.card button:hover {
-  transform: scale(1.05);
+#loginCard .btn-outline-secondary {
+  border: 1px solid #2e8b57;
+  color: #2e8b57;
+}
+#loginCard .btn-outline-secondary:hover {
+  background-color: #2e8b57;
+  color: #fff;
+}
+
+/* Centering tweaks for responsiveness */
+@media (max-width: 500px) {
+  #loginCard {
+    width: 90%;
+    padding: 20px;
+  }
 }
