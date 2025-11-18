@@ -5,9 +5,9 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/')
+@app.route('/login')
 def home():
-    return render_template('index.html')
+    return render_template('login.html')
 
 
 if __name__ == '__main__':
