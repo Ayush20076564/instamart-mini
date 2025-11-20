@@ -16,6 +16,18 @@
     </div>
   </nav>
 
+  <div class="container my-4">
+    <!-- Add Product -->
+    <div class="card p-3 mb-4">
+      <h5 class="text-success fw-bold">Add New Product</h5>
+      <div class="row g-2">
+        <div class="col"><input id="iname" class="form-control" placeholder="Item name" /></div>
+        <div class="col"><input id="iprice" class="form-control" placeholder="Price" type="number" /></div>
+        <div class="col"><input id="iqty" class="form-control" placeholder="Qty" type="number" /></div>
+        <div class="col"><input id="iimg" class="form-control" placeholder="Image filename (e.g. apple.jpg)" /></div>
+        <div class="col"><button class="btn btn-success w-100" onclick="addItem()">Add</button></div>
+      </div>
+    </div>
 
     <!-- Inventory -->
     <h4 class="text-success fw-bold mb-3">Inventory Items</h4>
