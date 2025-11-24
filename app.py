@@ -32,3 +32,27 @@ class Cart(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     quantity = db.Column(db.Integer, default=1)
 
+# ---------------- Auth ---------------- #
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    hashed = generate_password_hash(data["password"])
+    new_user = User(username=data["username"], password=hashed, role=data.get("role", "user"))
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"message": "User registered successfully"}), 201
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(username=data["username"]).first()
+    if not user or not check_password_hash(user.password, data["password"]):
+        return jsonify({"error": "Invalid username or password"}), 401
+    session["user"] = {"id": user.id, "username": user.username, "role": user.role}
+    return jsonify({"message": "Login successful", "user": session["user"]})
+
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    session.pop("user", None)
+    return jsonify({"message": "Logged out"}), 200
+
