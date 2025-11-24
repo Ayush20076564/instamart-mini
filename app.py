@@ -101,3 +101,84 @@ def delete_item(item_id):
     db.session.commit()
     return jsonify({"message": "Item deleted"})
 
+# ---------------- Cart ---------------- #
+@app.route("/api/cart", methods=["GET"])
+def get_cart():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Login required"}), 401
+    cart_items = Cart.query.filter_by(user_id=user["id"]).all()
+    cart, total = [], 0
+    for c in cart_items:
+        item = Item.query.get(c.item_id)
+        subtotal = item.price * c.quantity
+        total += subtotal
+        cart.append({"id": c.id, "name": item.name, "price": item.price, "quantity": c.quantity, "subtotal": subtotal})
+    return jsonify({"items": cart, "total": total})
+
+@app.route("/api/cart", methods=["POST"])
+def add_to_cart():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Login required"}), 401
+    data = request.get_json()
+    existing = Cart.query.filter_by(user_id=user["id"], item_id=data["item_id"]).first()
+    if existing:
+        existing.quantity += data.get("quantity", 1)
+    else:
+        db.session.add(Cart(user_id=user["id"], item_id=data["item_id"], quantity=data.get("quantity", 1)))
+    db.session.commit()
+    return jsonify({"message": "Item added to cart"})
+
+@app.route("/api/cart/<int:cart_id>", methods=["DELETE"])
+def remove_cart_item(cart_id):
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Login required"}), 401
+    cart_item = Cart.query.get(cart_id)
+    if not cart_item or cart_item.user_id != user["id"]:
+        return jsonify({"error": "Item not found"}), 404
+    db.session.delete(cart_item)
+    db.session.commit()
+    return jsonify({"message": "Item removed"})
+
+@app.route("/api/checkout", methods=["POST"])
+def checkout():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Login required"}), 401
+    cart_items = Cart.query.filter_by(user_id=user["id"]).all()
+    if not cart_items:
+        return jsonify({"error": "Cart is empty"}), 400
+    total = 0
+    for c in cart_items:
+        item = Item.query.get(c.item_id)
+        if item.quantity < c.quantity:
+            return jsonify({"error": f"Not enough {item.name} in stock"}), 400
+        item.quantity -= c.quantity
+        total += item.price * c.quantity
+        db.session.delete(c)
+    db.session.commit()
+    return jsonify({"message": f"Checkout successful! Total: ${total:.2f}"})
+
+# ---------------- Pages ---------------- #
+@app.route('/')
+def index_page():
+    return render_template('login.html')
+
+@app.route('/index.html')
+def login_page():
+    return render_template('index.html')
+
+@app.route('/store')
+def store_page():
+    user = session.get('user')
+    if not user or user["role"] != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+    return render_template('store.html')
+
+# ---------------- Run ---------------- #
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
