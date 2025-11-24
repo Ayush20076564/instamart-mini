@@ -56,3 +56,48 @@ def logout():
     session.pop("user", None)
     return jsonify({"message": "Logged out"}), 200
 
+# ---------------- Item CRUD ---------------- #
+@app.route("/api/items", methods=["GET"])
+def get_items():
+    items = Item.query.all()
+    return jsonify([{"id": i.id, "name": i.name, "price": i.price, "quantity": i.quantity, "image": i.image} for i in items])
+
+@app.route("/api/items", methods=["POST"])
+def add_item():
+    user = session.get("user")
+    if not user or user["role"] != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+    data = request.get_json()
+    item = Item(name=data["name"], price=data["price"], quantity=data["quantity"], image=data.get("image"))
+    db.session.add(item)
+    db.session.commit()
+    return jsonify({"message": "Item added"}), 201
+
+@app.route("/api/items/<int:item_id>", methods=["PUT"])
+def update_item(item_id):
+    user = session.get("user")
+    if not user or user["role"] != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+    data = request.get_json()
+    item = Item.query.get(item_id)
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+    item.name = data.get("name", item.name)
+    item.price = data.get("price", item.price)
+    item.quantity = data.get("quantity", item.quantity)
+    item.image = data.get("image", item.image)
+    db.session.commit()
+    return jsonify({"message": "Item updated"})
+
+@app.route("/api/items/<int:item_id>", methods=["DELETE"])
+def delete_item(item_id):
+    user = session.get("user")
+    if not user or user["role"] != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+    item = Item.query.get(item_id)
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({"message": "Item deleted"})
+
