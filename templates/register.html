@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login | Instamart Mini</title>
+  <title>Register | Instamart Mini</title>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <script src="{{ url_for('static', filename='login.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='register.js') }}" defer></script>
 </head>
 
 <body class="bg-light">
@@ -21,10 +21,16 @@
       <div class="mb-3">
         <input id="password" type="password" class="form-control" placeholder="Password" />
       </div>
+      <div class="mb-3">
+        <select id="role" class="form-select">
+          <option value="user" selected>Normal User</option>
+          <option value="admin">Admin (Store)</option>
+        </select>
+      </div>
 
       <div class="d-grid gap-2">
-        <button class="btn btn-success" onclick="login()">Login</button>
-        <button class="btn btn-outline-primary" onclick="window.location.href='/register'">Create Account</button>
+        <button class="btn btn-success" onclick="register()">Register</button>
+        <button class="btn btn-outline-secondary" onclick="window.location.href='/login'">Back to Login</button>
       </div>
     </div>
   </div>
