@@ -1,13 +1,17 @@
-from flask import Flask, jsonify, request, render_template, session
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import timedelta
 import os
 
 app = Flask(__name__)
 app.secret_key = "instamart-secret"
+
+# --- Database config (SQLite by default, Render PostgreSQL if set) ---
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///instamart.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 db = SQLAlchemy(app)
 CORS(app)
@@ -17,7 +21,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(10), default="user")  # user/admin
+    role = db.Column(db.String(10), default="user")  # user or admin
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,7 +36,7 @@ class Cart(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     quantity = db.Column(db.Integer, default=1)
 
-# ---------------- Auth ---------------- #
+# ---------------- Authentication APIs ---------------- #
 @app.route("/api/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -43,11 +47,12 @@ def register():
     return jsonify({"message": "User registered successfully"}), 201
 
 @app.route("/api/login", methods=["POST"])
-def login():
+def api_login():
     data = request.get_json()
     user = User.query.filter_by(username=data["username"]).first()
     if not user or not check_password_hash(user.password, data["password"]):
         return jsonify({"error": "Invalid username or password"}), 401
+    session.permanent = True
     session["user"] = {"id": user.id, "username": user.username, "role": user.role}
     return jsonify({"message": "Login successful", "user": session["user"]})
 
@@ -56,7 +61,7 @@ def logout():
     session.pop("user", None)
     return jsonify({"message": "Logged out"}), 200
 
-# ---------------- Item CRUD ---------------- #
+# ---------------- Item CRUD (Admin only) ---------------- #
 @app.route("/api/items", methods=["GET"])
 def get_items():
     items = Item.query.all()
@@ -101,7 +106,7 @@ def delete_item(item_id):
     db.session.commit()
     return jsonify({"message": "Item deleted"})
 
-# ---------------- Cart ---------------- #
+# ---------------- Cart APIs ---------------- #
 @app.route("/api/cart", methods=["GET"])
 def get_cart():
     user = session.get("user")
@@ -161,24 +166,46 @@ def checkout():
     db.session.commit()
     return jsonify({"message": f"Checkout successful! Total: ${total:.2f}"})
 
-# ---------------- Pages ---------------- #
+# ---------------- Page Routes ---------------- #
 @app.route('/')
-def index_page():
+@app.route('/login')
+def login_page():
+    user = session.get('user')
+    if user:
+        if user["role"] == "admin":
+            return redirect('/store')
+        else:
+            return redirect('/shop')
     return render_template('login.html')
 
-@app.route('/index.html')
-def login_page():
+@app.route('/register')
+def register_page():
+    user = session.get('user')
+    if user:
+        if user["role"] == "admin":
+            return redirect('/store')
+        else:
+            return redirect('/shop')
+    return render_template('register.html')
+
+@app.route('/shop')
+def shop_page():
+    user = session.get('user')
+    if not user:
+        return redirect(url_for('login_page'))
+    if user["role"] == "admin":
+        return redirect('/store')
     return render_template('index.html')
 
 @app.route('/store')
 def store_page():
     user = session.get('user')
     if not user or user["role"] != "admin":
-        return jsonify({"error": "Admin access required"}), 403
+        return redirect(url_for('login_page'))
     return render_template('store.html')
 
 # ---------------- Run ---------------- #
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
