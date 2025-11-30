@@ -3,25 +3,34 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
+from sqlalchemy import text
 import os
 
 app = Flask(__name__)
 app.secret_key = "instamart-secret"
 
-# --- Database config (SQLite by default, Render PostgreSQL if set) ---
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///instamart.db")
+# ---------------- Database Config ---------------- #
+db_url = os.getenv("DATABASE_URL", "sqlite:///instamart.db")
+if db_url.startswith("postgres://"):  # Render uses postgres:// prefix
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.permanent_session_lifetime = timedelta(minutes=30)
+app.config["SESSION_COOKIE_SECURE"] = False  # keep False for local dev
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 db = SQLAlchemy(app)
-CORS(app)
+CORS(app, supports_credentials=True)
+
+print("✅ Using database:", app.config["SQLALCHEMY_DATABASE_URI"])
 
 # ---------------- Models ---------------- #
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(10), default="user")  # user or admin
+    role = db.Column(db.String(10), default="user")
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,10 +45,23 @@ class Cart(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))
     quantity = db.Column(db.Integer, default=1)
 
-# ---------------- Authentication APIs ---------------- #
+# ---------------- Health Check ---------------- #
+@app.route("/api/health")
+def health_check():
+    try:
+        db.session.execute(text("SELECT 1"))
+        return jsonify({"status": "ok", "db": "connected"})
+    except Exception as e:
+        return jsonify({"status": "error", "details": str(e)}), 500
+
+# ---------------- Authentication ---------------- #
 @app.route("/api/register", methods=["POST"])
 def register():
     data = request.get_json()
+    if not data.get("username") or not data.get("password"):
+        return jsonify({"error": "Missing username or password"}), 400
+    if User.query.filter_by(username=data["username"]).first():
+        return jsonify({"error": "Username already exists"}), 409
     hashed = generate_password_hash(data["password"])
     new_user = User(username=data["username"], password=hashed, role=data.get("role", "user"))
     db.session.add(new_user)
@@ -49,23 +71,31 @@ def register():
 @app.route("/api/login", methods=["POST"])
 def api_login():
     data = request.get_json()
-    user = User.query.filter_by(username=data["username"]).first()
-    if not user or not check_password_hash(user.password, data["password"]):
+    user = User.query.filter_by(username=data.get("username")).first()
+    if not user or not check_password_hash(user.password, data.get("password")):
         return jsonify({"error": "Invalid username or password"}), 401
     session.permanent = True
     session["user"] = {"id": user.id, "username": user.username, "role": user.role}
     return jsonify({"message": "Login successful", "user": session["user"]})
 
 @app.route("/api/logout", methods=["POST"])
-def logout():
+def api_logout():
     session.pop("user", None)
     return jsonify({"message": "Logged out"}), 200
 
-# ---------------- Item CRUD (Admin only) ---------------- #
+@app.route("/logout")
+def page_logout():
+    session.pop("user", None)
+    return redirect("/login")
+
+# ---------------- Item CRUD ---------------- #
 @app.route("/api/items", methods=["GET"])
 def get_items():
     items = Item.query.all()
-    return jsonify([{"id": i.id, "name": i.name, "price": i.price, "quantity": i.quantity, "image": i.image} for i in items])
+    return jsonify([
+        {"id": i.id, "name": i.name, "price": i.price, "quantity": i.quantity, "image": i.image}
+        for i in items
+    ])
 
 @app.route("/api/items", methods=["POST"])
 def add_item():
@@ -73,7 +103,14 @@ def add_item():
     if not user or user["role"] != "admin":
         return jsonify({"error": "Admin access required"}), 403
     data = request.get_json()
-    item = Item(name=data["name"], price=data["price"], quantity=data["quantity"], image=data.get("image"))
+    if not data.get("name"):
+        return jsonify({"error": "Missing item name"}), 400
+    item = Item(
+        name=data["name"],
+        price=data.get("price", 0.0),
+        quantity=data.get("quantity", 0),
+        image=data.get("image")
+    )
     db.session.add(item)
     db.session.commit()
     return jsonify({"message": "Item added"}), 201
@@ -106,7 +143,7 @@ def delete_item(item_id):
     db.session.commit()
     return jsonify({"message": "Item deleted"})
 
-# ---------------- Cart APIs ---------------- #
+# ---------------- Cart ---------------- #
 @app.route("/api/cart", methods=["GET"])
 def get_cart():
     user = session.get("user")
@@ -118,7 +155,13 @@ def get_cart():
         item = Item.query.get(c.item_id)
         subtotal = item.price * c.quantity
         total += subtotal
-        cart.append({"id": c.id, "name": item.name, "price": item.price, "quantity": c.quantity, "subtotal": subtotal})
+        cart.append({
+            "id": c.id,
+            "name": item.name,
+            "price": item.price,
+            "quantity": c.quantity,
+            "subtotal": subtotal
+        })
     return jsonify({"items": cart, "total": total})
 
 @app.route("/api/cart", methods=["POST"])
@@ -166,27 +209,27 @@ def checkout():
     db.session.commit()
     return jsonify({"message": f"Checkout successful! Total: ${total:.2f}"})
 
-# ---------------- Page Routes ---------------- #
+# ---------------- Pages ---------------- #
 @app.route('/')
+def home_redirect():
+    if "user" not in session:
+        return redirect("/login")
+    user = session["user"]
+    return redirect("/store" if user["role"] == "admin" else "/shop")
+
 @app.route('/login')
 def login_page():
-    user = session.get('user')
-    if user:
-        if user["role"] == "admin":
-            return redirect('/store')
-        else:
-            return redirect('/shop')
-    return render_template('login.html')
+    if "user" in session:
+        user = session["user"]
+        return redirect("/store" if user["role"] == "admin" else "/shop")
+    return render_template("login.html")
 
 @app.route('/register')
 def register_page():
-    user = session.get('user')
-    if user:
-        if user["role"] == "admin":
-            return redirect('/store')
-        else:
-            return redirect('/shop')
-    return render_template('register.html')
+    if "user" in session:
+        user = session["user"]
+        return redirect("/store" if user["role"] == "admin" else "/shop")
+    return render_template("register.html")
 
 @app.route('/shop')
 def shop_page():
@@ -194,18 +237,18 @@ def shop_page():
     if not user:
         return redirect(url_for('login_page'))
     if user["role"] == "admin":
-        return redirect('/store')
-    return render_template('index.html')
+        return redirect("/store")
+    return render_template("index.html")
 
 @app.route('/store')
 def store_page():
     user = session.get('user')
     if not user or user["role"] != "admin":
         return redirect(url_for('login_page'))
-    return render_template('store.html')
+    return render_template("store.html")
 
 # ---------------- Run ---------------- #
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)), debug=True)
