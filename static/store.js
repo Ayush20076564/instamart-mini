@@ -9,23 +9,19 @@ async function loadItems() {
     const grid = document.getElementById('itemGrid');
     grid.innerHTML = '';
 
-    if (!Array.isArray(items) || items.length === 0) {
-      grid.innerHTML = '<p class="text-muted">No products found. Add one below!</p>';
+    if (items.length === 0) {
+      grid.innerHTML = '<p class="text-muted">No products yet. Add one below!</p>';
       return;
     }
 
     items.forEach(i => {
       const card = document.createElement('div');
-      card.className = 'card text-center shadow-sm p-3';
-      card.style.borderRadius = '10px';
+      card.className = 'card';
       card.innerHTML = `
-        <img src="${i.image || '/static/images/default.jpg'}" alt="${i.name}" 
-             class="img-fluid rounded mb-2" style="height:120px;object-fit:cover;">
-        <h6 class="fw-bold">${i.name}</h6>
-        <p class="text-muted mb-1">💲${i.price.toFixed(2)} | Qty: ${i.quantity}</p>
-        <div class="d-flex justify-content-center gap-2 mt-2">
-          <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(${i.id})">🗑️ Delete</button>
-        </div>
+        <img src="${i.image || '/static/images/default.jpg'}" alt="${i.name}" width="100%">
+        <h5 class="mt-2">${i.name}</h5>
+        <p>💲${i.price.toFixed(2)} | Qty: ${i.quantity}</p>
+        <button class="btn btn-danger btn-sm" onclick="deleteItem(${i.id})">🗑️ Delete</button>
       `;
       grid.appendChild(card);
     });
@@ -50,7 +46,7 @@ async function addItem() {
   try {
     const res = await fetch(`${API}/items`, {
       method: 'POST',
-      credentials: 'include', // ✅ include cookies/session
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, price, quantity, image })
     });
@@ -60,9 +56,6 @@ async function addItem() {
       alert('✅ Item added successfully!');
       clearForm();
       loadItems();
-    } else if (res.status === 403) {
-      alert('🚫 Admin access required.');
-      window.location.href = '/login';
     } else {
       alert(`❌ ${data.error || 'Failed to add item.'}`);
     }
@@ -79,16 +72,13 @@ async function deleteItem(id) {
   try {
     const res = await fetch(`${API}/items/${id}`, {
       method: 'DELETE',
-      credentials: 'include' // ✅ ensures admin session is sent
+      credentials: 'include'
     });
     const data = await res.json();
 
     if (res.status === 200) {
       alert('🗑️ Item deleted successfully.');
       loadItems();
-    } else if (res.status === 403) {
-      alert('🚫 Admin access required.');
-      window.location.href = '/login';
     } else {
       alert(`❌ ${data.error || 'Could not delete item.'}`);
     }
@@ -109,23 +99,24 @@ function clearForm() {
 // ---------------- LOGOUT ----------------
 async function logout() {
   try {
-    const res = await fetch(`${API}/logout`, {
+    const res = await fetch('/api/logout', {
       method: 'POST',
-      credentials: 'include' // ✅ include session cookie
+      credentials: 'include'
     });
 
     if (res.ok) {
       alert('👋 Logged out successfully!');
+      sessionStorage.clear();
+      localStorage.clear();
       window.location.href = '/login';
     } else {
-      // fallback for safety
-      window.location.href = '/logout';
+      alert('Logout failed. Redirecting anyway...');
+      window.location.href = '/login';
     }
   } catch (err) {
-    console.error('Error logging out:', err);
-    window.location.href = '/logout';
+    console.error('Logout error:', err);
+    window.location.href = '/login';
   }
 }
 
-// ---------------- ON PAGE LOAD ----------------
 document.addEventListener('DOMContentLoaded', loadItems);

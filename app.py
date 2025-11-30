@@ -16,7 +16,7 @@ if db_url.startswith("postgres://"):  # Render uses postgres:// prefix
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.permanent_session_lifetime = timedelta(minutes=30)
-app.config["SESSION_COOKIE_SECURE"] = False  # keep False for local dev
+app.config["SESSION_COOKIE_SECURE"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
@@ -115,22 +115,6 @@ def add_item():
     db.session.commit()
     return jsonify({"message": "Item added"}), 201
 
-@app.route("/api/items/<int:item_id>", methods=["PUT"])
-def update_item(item_id):
-    user = session.get("user")
-    if not user or user["role"] != "admin":
-        return jsonify({"error": "Admin access required"}), 403
-    data = request.get_json()
-    item = Item.query.get(item_id)
-    if not item:
-        return jsonify({"error": "Item not found"}), 404
-    item.name = data.get("name", item.name)
-    item.price = data.get("price", item.price)
-    item.quantity = data.get("quantity", item.quantity)
-    item.image = data.get("image", item.image)
-    db.session.commit()
-    return jsonify({"message": "Item updated"})
-
 @app.route("/api/items/<int:item_id>", methods=["DELETE"])
 def delete_item(item_id):
     user = session.get("user")
@@ -153,10 +137,12 @@ def get_cart():
     cart, total = [], 0
     for c in cart_items:
         item = Item.query.get(c.item_id)
+        if not item:
+            continue
         subtotal = item.price * c.quantity
         total += subtotal
         cart.append({
-            "id": c.id,
+            "id": c.item_id,
             "name": item.name,
             "price": item.price,
             "quantity": c.quantity,
@@ -170,22 +156,26 @@ def add_to_cart():
     if not user:
         return jsonify({"error": "Login required"}), 401
     data = request.get_json()
-    existing = Cart.query.filter_by(user_id=user["id"], item_id=data["item_id"]).first()
+    item_id = data.get("item_id")
+    qty = data.get("quantity", 1)
+    existing = Cart.query.filter_by(user_id=user["id"], item_id=item_id).first()
     if existing:
-        existing.quantity += data.get("quantity", 1)
+        existing.quantity += qty
     else:
-        db.session.add(Cart(user_id=user["id"], item_id=data["item_id"], quantity=data.get("quantity", 1)))
+        db.session.add(Cart(user_id=user["id"], item_id=item_id, quantity=qty))
     db.session.commit()
     return jsonify({"message": "Item added to cart"})
 
-@app.route("/api/cart/<int:cart_id>", methods=["DELETE"])
-def remove_cart_item(cart_id):
+@app.route("/api/cart/<int:item_id>", methods=["DELETE"])
+def remove_cart_item(item_id):
     user = session.get("user")
     if not user:
         return jsonify({"error": "Login required"}), 401
-    cart_item = Cart.query.get(cart_id)
-    if not cart_item or cart_item.user_id != user["id"]:
-        return jsonify({"error": "Item not found"}), 404
+
+    cart_item = Cart.query.filter_by(user_id=user["id"], item_id=item_id).first()
+    if not cart_item:
+        return jsonify({"error": "Item not found in cart"}), 404
+
     db.session.delete(cart_item)
     db.session.commit()
     return jsonify({"message": "Item removed"})
@@ -201,13 +191,13 @@ def checkout():
     total = 0
     for c in cart_items:
         item = Item.query.get(c.item_id)
-        if item.quantity < c.quantity:
+        if not item or item.quantity < c.quantity:
             return jsonify({"error": f"Not enough {item.name} in stock"}), 400
         item.quantity -= c.quantity
         total += item.price * c.quantity
         db.session.delete(c)
     db.session.commit()
-    return jsonify({"message": f"Checkout successful! Total: ${total:.2f}"})
+    return jsonify({"message": f"Checkout successful! Total: €{total:.2f}"})
 
 # ---------------- Pages ---------------- #
 @app.route('/')
