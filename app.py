@@ -128,6 +128,35 @@ def delete_item(item_id):
     return jsonify({"message": "Item deleted"})
 
 # ---------------- Cart ---------------- #
+@app.route("/api/cart", methods=["POST"])
+def add_to_cart():
+    user = session.get("user")
+    if not user:
+        return jsonify({"error": "Login required"}), 401
+
+    data = request.get_json()
+    item_id = data.get("item_id")
+    qty = int(data.get("quantity", 1))
+
+    item = Item.query.get(item_id)
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+
+    existing = Cart.query.filter_by(user_id=user["id"], item_id=item_id).first()
+    current_qty = existing.quantity if existing else 0
+    available = item.quantity - current_qty
+
+    if qty > available:
+        return jsonify({"error": f"Only {available} '{item.name}' available in stock."}), 400
+
+    if existing:
+        existing.quantity += qty
+    else:
+        db.session.add(Cart(user_id=user["id"], item_id=item_id, quantity=qty))
+
+    db.session.commit()
+    return jsonify({"message": f"Added {qty} x {item.name} to cart"})
+
 @app.route("/api/cart", methods=["GET"])
 def get_cart():
     user = session.get("user")
@@ -149,22 +178,6 @@ def get_cart():
             "subtotal": subtotal
         })
     return jsonify({"items": cart, "total": total})
-
-@app.route("/api/cart", methods=["POST"])
-def add_to_cart():
-    user = session.get("user")
-    if not user:
-        return jsonify({"error": "Login required"}), 401
-    data = request.get_json()
-    item_id = data.get("item_id")
-    qty = data.get("quantity", 1)
-    existing = Cart.query.filter_by(user_id=user["id"], item_id=item_id).first()
-    if existing:
-        existing.quantity += qty
-    else:
-        db.session.add(Cart(user_id=user["id"], item_id=item_id, quantity=qty))
-    db.session.commit()
-    return jsonify({"message": "Item added to cart"})
 
 @app.route("/api/cart/<int:item_id>", methods=["DELETE"])
 def remove_cart_item(item_id):
