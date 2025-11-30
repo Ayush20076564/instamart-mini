@@ -1,5 +1,5 @@
 /* =====================================
-   GLOBAL THEME (green Instamart look)
+   GLOBAL THEME (Instamart Green Look)
 ===================================== */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -9,7 +9,14 @@ body {
   padding: 0;
 }
 
-/* Bootstrap override: buttons and inputs */
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease;
+}
+
+/* =====================================
+   Buttons, Inputs, and Links
+===================================== */
 button, .btn {
   border-radius: 10px;
   font-weight: 600;
@@ -19,53 +26,119 @@ button:hover, .btn:hover {
   transform: scale(1.05);
   opacity: 0.9;
 }
-
-/* =====================================
-   LOGIN PAGE CARD
-===================================== */
-#loginCard {
-  width: 400px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-#loginCard h3 {
-  color: #2e8b57;
-  letter-spacing: 0.5px;
-}
-
-#loginCard input {
+input, select {
   border-radius: 8px;
   border: 1px solid #cfcfcf;
   padding: 10px;
   font-size: 0.95rem;
 }
-
-#loginCard input:focus {
+input:focus, select:focus {
   border-color: #2e8b57;
   box-shadow: 0 0 5px rgba(46, 139, 87, 0.4);
 }
 
-#loginCard .btn-success {
+/* =====================================
+   LOGIN & REGISTER CARD
+===================================== */
+#loginCard, .auth-card {
+  width: 400px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+#loginCard h3, .auth-card h3 {
+  color: #2e8b57;
+  letter-spacing: 0.5px;
+}
+#loginCard .btn-success, .auth-card .btn-success {
   background-color: #2e8b57;
   border: none;
 }
-
-#loginCard .btn-outline-secondary {
+#loginCard .btn-outline-secondary, .auth-card .btn-outline-secondary {
   border: 1px solid #2e8b57;
   color: #2e8b57;
 }
-#loginCard .btn-outline-secondary:hover {
+#loginCard .btn-outline-secondary:hover, .auth-card .btn-outline-secondary:hover {
   background-color: #2e8b57;
   color: #fff;
 }
 
-/* Centering tweaks for responsiveness */
+/* Responsive */
 @media (max-width: 500px) {
-  #loginCard {
+  #loginCard, .auth-card {
     width: 90%;
     padding: 20px;
   }
+}
+
+/* =====================================
+   NAVBAR & FOOTER (Shop/Admin)
+===================================== */
+.navbar {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+footer {
+  padding: 20px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+footer small {
+  color: #888;
+}
+
+/* =====================================
+   SHOP PAGE
+===================================== */
+#items .card {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  transition: all 0.2s ease-in-out;
+}
+#items .card:hover {
+  transform: translateY(-5px);
+}
+#items img {
+  height: 150px;
+  object-fit: contain;
+}
+#cart {
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================
+   STORE (ADMIN) PAGE
+===================================== */
+header.bg-success {
+  background-color: #2e8b57 !important;
+}
+.add-section, .card {
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+.add-section input {
+  border-radius: 8px;
+}
+#itemGrid .card img {
+  border-radius: 10px;
+  height: 150px;
+  object-fit: contain;
+}
+#itemGrid .card button {
+  margin-top: 8px;
+}
+
+/* =====================================
+   UTILITIES
+===================================== */
+.text-success {
+  color: #2e8b57 !important;
+}
+.bg-success {
+  background-color: #2e8b57 !important;
+}
+.btn-success {
+  background-color: #2e8b57 !important;
 }
