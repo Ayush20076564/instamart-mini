@@ -12,7 +12,7 @@
 
 <body class="bg-light">
   <div class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
-    <div class="card shadow-lg p-4" style="width:400px; border-radius:16px;">
+    <div id="loginCard" class="card shadow-lg p-4">
       <h3 class="text-center text-success fw-bold mb-4">🥦 Instamart Mini</h3>
 
       <div class="mb-3">
@@ -24,8 +24,14 @@
 
       <div class="d-grid gap-2">
         <button class="btn btn-success" onclick="login()">Login</button>
-        <button class="btn btn-outline-primary" onclick="window.location.href='/register'">Create Account</button>
+        <button class="btn btn-outline-secondary" onclick="window.location.href='/register'">
+          Create Account
+        </button>
       </div>
+
+      <p class="text-center text-muted mt-3 small">
+        Don’t have an account yet? <a href="/register" class="text-success text-decoration-none">Register here</a>
+      </p>
     </div>
   </div>
 </body>
