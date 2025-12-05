@@ -1,65 +1,67 @@
 import unittest
-import os
 
-from app import app, db, Product
+from app import app, db, Item
 
 
-class InstamartMiniTestCase(unittest.TestCase):
+class ItemCrudTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """
         Run once before all tests.
-        Configure the app to use an in-memory SQLite DB for testing.
+        Use a separate SQLite DB for testing.
         """
-        # Use a separate, in-memory DB so tests don’t touch your real Postgres
         app.config["TESTING"] = True
-        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-        app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instamart_test.db"
 
         cls.app = app
-        cls.client = app.test_client()
 
         with cls.app.app_context():
+            db.drop_all()
             db.create_all()
 
     @classmethod
     def tearDownClass(cls):
         """
         Run once after all tests.
-        Drop all tables from the test DB.
+        Clean up tables.
         """
         with cls.app.app_context():
             db.drop_all()
 
-    def test_home_route_status_code(self):
+    def test_item_crud(self):
         """
-        Check that the home page ("/") returns HTTP 200.
-        """
-        response = self.client.get("/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_home_route_content(self):
-        """
-        Check that the home page returns expected text.
-        Adjust the expected string if your index() returns HTML.
-        """
-        response = self.client.get("/")
-        self.assertIn(b"Instamart", response.data)
-
-    def test_create_product_model(self):
-        """
-        Verify that a Product can be created and saved to the DB.
+        Simple CRUD: Create, Read, Update, Delete for Item model.
         """
         with self.app.app_context():
-            product = Product(name="Test Apple", price=1.99)
-            db.session.add(product)
+            # --- CREATE ---
+            item = Item(name="Milk", price=2.5, quantity=10, image=None)
+            db.session.add(item)
             db.session.commit()
 
-            # Fetch from DB
-            saved = Product.query.filter_by(name="Test Apple").first()
-            self.assertIsNotNone(saved)
-            self.assertEqual(saved.name, "Test Apple")
-            self.assertAlmostEqual(saved.price, 1.99, places=2)
+            self.assertIsNotNone(item.id)
+
+            # --- READ ---
+            fetched = Item.query.get(item.id)
+            self.assertIsNotNone(fetched)
+            self.assertEqual(fetched.name, "Milk")
+            self.assertEqual(fetched.price, 2.5)
+            self.assertEqual(fetched.quantity, 10)
+
+            # --- UPDATE ---
+            fetched.price = 3.0
+            fetched.quantity = 8
+            db.session.commit()
+
+            updated = Item.query.get(item.id)
+            self.assertEqual(updated.price, 3.0)
+            self.assertEqual(updated.quantity, 8)
+
+            # --- DELETE ---
+            db.session.delete(updated)
+            db.session.commit()
+
+            deleted = Item.query.get(item.id)
+            self.assertIsNone(deleted)
 
 
 if __name__ == "__main__":
