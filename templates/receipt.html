@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Receipt - Instamart</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .receipt-container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+    }
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .receipt-header h2 {
+      font-weight: bold;
+      color: #198754;
+    }
+    table {
+      width: 100%;
+    }
+    th {
+      background-color: #198754;
+      color: white;
+    }
+    td, th {
+      text-align: center;
+      padding: 10px;
+    }
+    .total {
+      text-align: right;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt-container">
+    <div class="receipt-header">
+      <h2>🧾 Instamart Receipt</h2>
+      <p class="text-muted">Thank you for shopping with us!</p>
+    </div>
+
+    {% if receipt %}
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price (€)</th>
+            <th>Subtotal (€)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in receipt['items'] %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ "%.2f"|format(item.price) }}</td>
+            <td>{{ "%.2f"|format(item.subtotal) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <p class="total">Total: €{{ "%.2f"|format(receipt['total']) }}</p>
+
+      <div class="btn-group">
+        <button class="btn btn-success" onclick="window.print()">🖨️ Download / Print Receipt</button>
+        <a href="/shop" class="btn btn-outline-secondary">Continue Shopping</a>
+      </div>
+
+    {% else %}
+      <div class="text-center mt-4">
+        <h5>No receipt data found.</h5>
+        <a href="/shop" class="btn btn-success mt-3">Go Back to Shop</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
