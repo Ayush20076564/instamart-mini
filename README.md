@@ -63,7 +63,7 @@ instamart-mini/
 
 ## 🚀 Setup & Run Locally  
 ### 1️⃣ Clone repository:  
-   git clone https://github.com/<your-username>/instamart-mini.git  
+   git clone https://github.com/Ayush20076564/instamart-mini.git  
    cd instamart-mini
 
 ### 2️⃣ Create virtual environment:  
