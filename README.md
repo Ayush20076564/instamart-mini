@@ -5,6 +5,8 @@ A lightweight, responsive Flask + Bootstrap + PostgreSQL grocery web app demonst
 It’s simple, cloud-ready, and fully deployed on Render with automated database integration.
 
 ────────────────────────────────────────────
+
+
 🧩 Features
 
 👩‍💻 User Features
@@ -20,6 +22,8 @@ It’s simple, cloud-ready, and fully deployed on Render with automated database
 • Automatic stock deduction on checkout
 
 ────────────────────────────────────────────
+
+
 💾 Technical Highlights
 • RESTful backend under /api/*
 • Session-based authentication using Flask cookies
@@ -29,6 +33,8 @@ It’s simple, cloud-ready, and fully deployed on Render with automated database
 • Responsive UI for both desktop and mobile
 
 ────────────────────────────────────────────
+
+
 🏗️ Tech Stack
 
 Frontend: HTML5, CSS3, Bootstrap 5, Vanilla JavaScript
@@ -40,6 +46,8 @@ Deployment: Render Cloud Platform
 AI Assistance: ChatGPT (OpenAI GPT-5)
 
 ────────────────────────────────────────────
+
+
 ⚙️ Project Structure
 instamart-mini/
 ├── app.py
@@ -58,6 +66,8 @@ instamart-mini/
 └── README.md
 
 ────────────────────────────────────────────
+
+
 🚀 Setup & Run Locally
 1️⃣ Clone repository:
    git clone https://github.com/<your-username>/instamart-mini.git
@@ -81,6 +91,7 @@ instamart-mini/
    (open http://127.0.0.1:5000)
 
 ────────────────────────────────────────────
+
 ☁️ Deploying to Render
 1. Push to GitHub
 2. Log into Render.com
@@ -95,6 +106,8 @@ instamart-mini/
 8. Deploy
 
 ────────────────────────────────────────────
+
+
 🧪 Unit Test Example
 import json
 from app import app, db
@@ -110,6 +123,8 @@ def test_register_and_login():
 Run tests: pytest
 
 ────────────────────────────────────────────
+
+
 🧠 Architecture
 Backend (Flask): Auth, CRUD, cart, checkout
 Frontend (JS): Dynamic UI with fetch()
@@ -119,6 +134,7 @@ Render: PostgreSQL auto-linked
 Receipt: Shows checkout summary
 
 ────────────────────────────────────────────
+
 🔗 References
 Flask Docs – https://flask.palletsprojects.com/
 SQLAlchemy ORM – https://docs.sqlalchemy.org/
@@ -128,12 +144,14 @@ Render Flask Guide – https://render.com/docs/deploy-flask
 ChatGPT GPT-5 – https://chat.openai.com
 
 ────────────────────────────────────────────
+
 🧑‍💻 Author
 Ayush Sharma
 📧 20076564@mydbs.ie
 Built with ❤️ using Flask, PostgreSQL, and ChatGPT guidance.
 
 ────────────────────────────────────────────
+
 💡 Credits
 Hands-on development: Ayush Sharma
 AI Pair Programming: ChatGPT (GPT-5)
