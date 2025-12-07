@@ -1,13 +1,10 @@
-### 🥦 Instamart Mini — Full-Stack Grocery Web App
+# 🥦 Instamart Mini — Full-Stack Grocery Web App
 
 A lightweight, responsive Flask + Bootstrap + PostgreSQL grocery web app demonstrating full-stack engineering concepts — user authentication, admin inventory management, shopping cart, checkout flow, and digital receipt generation.
 
-It’s simple, cloud-ready, and fully deployed on Render with automated database integration.
+It’s simple, cloud-ready, and fully deployed on Render with automated database integration.  
 
-────────────────────────────────────────────
-
-
-### 🧩 Features
+#  🧩 Features  
 
 ## 👩‍💻 User Features
 • Secure registration and login (passwords hashed via Werkzeug)
