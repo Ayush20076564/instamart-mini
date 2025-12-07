@@ -22,7 +22,7 @@ async function loadItems() {
           <div class="card-body">
             <h6 class="fw-bold">${i.name}</h6>
             <p class="text-muted">€${i.price.toFixed(2)} | Qty: ${i.quantity}</p>
-            <button class="btn btn-success btn-sm" onclick="addToCart(${i.id})">Add to Cart</button>
+            <button class="btn btn-success btn-sm w-100" onclick="addToCart(${i.id})">Add to Cart</button>
           </div>
         </div>
       `;
@@ -36,27 +36,71 @@ async function loadItems() {
 }
 
 // ---------------- ADD TO CART ----------------
-async function addToCart(id) {
+async function addToCart(id, qty = 1) {
   try {
     const res = await fetch(`${API}/cart`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item_id: id, quantity: 1 })
+      body: JSON.stringify({ item_id: id, quantity: qty })
     });
 
+    const data = await res.json();
     if (res.ok) {
-      alert('✅ Item added to cart');
       loadCart();
     } else if (res.status === 401) {
       alert('Please login first');
       window.location.href = '/login';
     } else {
-      const data = await res.json();
       alert(data.error || 'Failed to add item.');
     }
   } catch (err) {
     console.error('Error adding to cart:', err);
+  }
+}
+
+// ---------------- REMOVE FROM CART ----------------
+async function removeFromCart(itemId) {
+  try {
+    const res = await fetch(`${API}/cart/${itemId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      loadCart();
+    } else {
+      alert(data.error || 'Failed to remove item.');
+    }
+  } catch (err) {
+    console.error('Error removing item:', err);
+  }
+}
+
+// ---------------- UPDATE QUANTITY ----------------
+async function updateQuantity(itemId, currentQty, change) {
+  const newQty = currentQty + change;
+  if (newQty <= 0) {
+    await removeFromCart(itemId);
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/cart`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: itemId, quantity: change })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || 'Failed to update quantity.');
+    }
+    loadCart();
+  } catch (err) {
+    console.error('Error updating quantity:', err);
   }
 }
 
@@ -88,9 +132,9 @@ async function loadCart() {
       div.innerHTML = `
         <span><b>${c.name}</b></span>
         <div>
-          <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${c.id}, -1)">−</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${c.id}, ${c.quantity}, -1)">−</button>
           <span class="mx-2">${c.quantity}</span>
-          <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${c.id}, 1)">+</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${c.id}, ${c.quantity}, 1)">+</button>
           <span class="ms-3 text-success">€${c.subtotal.toFixed(2)}</span>
           <button class="btn btn-sm btn-outline-danger ms-3" onclick="removeFromCart(${c.id})">🗑️</button>
         </div>
@@ -105,57 +149,19 @@ async function loadCart() {
   }
 }
 
-// ---------------- REMOVE ITEM FROM CART ----------------
-async function removeFromCart(itemId) {
+// ---------------- CHECKOUT ----------------
+async function checkout() {
   try {
-    const res = await fetch(`${API}/cart/${itemId}`, {
-      method: 'DELETE',
+    const res = await fetch(`${API}/checkout`, {
+      method: 'POST',
       credentials: 'include'
     });
     const data = await res.json();
 
     if (res.ok) {
-      loadCart();
+      window.location.href = data.redirect || '/receipt';
     } else {
-      alert(data.error || 'Failed to remove item.');
-    }
-  } catch (err) {
-    console.error('Error removing item:', err);
-  }
-}
-
-// ---------------- UPDATE QUANTITY ----------------
-async function updateQuantity(itemId, delta) {
-  try {
-    if (delta === 0) return;
-    if (delta < 0) {
-      // decrease quantity
-      const res = await fetch(`${API}/cart`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ item_id: itemId, quantity: delta })
-      });
-      if (!res.ok) removeFromCart(itemId);
-    } else {
-      await addToCart(itemId);
-    }
-    loadCart();
-  } catch (err) {
-    console.error('Error updating quantity:', err);
-  }
-}
-
-// ---------------- CHECKOUT ----------------
-async function checkout() {
-  try {
-    const res = await fetch(`${API}/checkout`, { method: 'POST', credentials: 'include' });
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message);
-      loadCart();
-    } else {
-      alert(data.error);
+      alert(data.error || 'Checkout failed.');
     }
   } catch (err) {
     console.error('Checkout error:', err);
