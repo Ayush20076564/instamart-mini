@@ -1,4 +1,4 @@
-🥦 Instamart Mini — Full-Stack Grocery Web App
+### 🥦 Instamart Mini — Full-Stack Grocery Web App
 
 A lightweight, responsive Flask + Bootstrap + PostgreSQL grocery web app demonstrating full-stack engineering concepts — user authentication, admin inventory management, shopping cart, checkout flow, and digital receipt generation.
 
@@ -7,16 +7,16 @@ It’s simple, cloud-ready, and fully deployed on Render with automated database
 ────────────────────────────────────────────
 
 
-🧩 Features
+### 🧩 Features
 
-👩‍💻 User Features
+## 👩‍💻 User Features
 • Secure registration and login (passwords hashed via Werkzeug)
 • Browse grocery items dynamically
 • Add/remove items from cart with instant quantity validation
 • Prevent adding more than available stock
 • Checkout generates a live receipt page with purchased items summary
 
-🛠️ Admin Features
+## 🛠️ Admin Features
 • Admin dashboard (/store) for inventory management
 • Add, update, delete products
 • Automatic stock deduction on checkout
@@ -24,7 +24,7 @@ It’s simple, cloud-ready, and fully deployed on Render with automated database
 ────────────────────────────────────────────
 
 
-💾 Technical Highlights
+### 💾 Technical Highlights
 • RESTful backend under /api/*
 • Session-based authentication using Flask cookies
 • ORM-based persistence for User, Item, and Cart
@@ -35,7 +35,7 @@ It’s simple, cloud-ready, and fully deployed on Render with automated database
 ────────────────────────────────────────────
 
 
-🏗️ Tech Stack
+###🏗️ Tech Stack
 
 Frontend: HTML5, CSS3, Bootstrap 5, Vanilla JavaScript
 Backend: Python 3.10+ with Flask
@@ -48,7 +48,7 @@ AI Assistance: ChatGPT (OpenAI GPT-5)
 ────────────────────────────────────────────
 
 
-⚙️ Project Structure
+### ⚙️ Project Structure
 instamart-mini/
 ├── app.py
 ├── requirements.txt
@@ -68,31 +68,31 @@ instamart-mini/
 ────────────────────────────────────────────
 
 
-🚀 Setup & Run Locally
+##🚀 Setup & Run Locally
 1️⃣ Clone repository:
    git clone https://github.com/<your-username>/instamart-mini.git
    cd instamart-mini
 
-2️⃣ Create virtual environment:
+## 2️⃣ Create virtual environment:
    python -m venv venv
    source venv/bin/activate   (macOS/Linux)
    venv\Scripts\activate      (Windows)
 
-3️⃣ Install dependencies:
+## 3️⃣ Install dependencies:
    pip install -r requirements.txt
 
-4️⃣ Initialize database:
+## 4️⃣ Initialize database:
    from app import db
    db.create_all()
    exit()
 
-5️⃣ Start app:
+## 5️⃣ Start app:
    python app.py
    (open http://127.0.0.1:5000)
 
 ────────────────────────────────────────────
 
-☁️ Deploying to Render
+## ☁️ Deploying to Render
 1. Push to GitHub
 2. Log into Render.com
 3. Create new web service
@@ -108,7 +108,7 @@ instamart-mini/
 ────────────────────────────────────────────
 
 
-🧪 Unit Test Example
+## 🧪 Unit Test Example
 import json
 from app import app, db
 
@@ -125,7 +125,7 @@ Run tests: pytest
 ────────────────────────────────────────────
 
 
-🧠 Architecture
+### 🧠 Architecture
 Backend (Flask): Auth, CRUD, cart, checkout
 Frontend (JS): Dynamic UI with fetch()
 Database: SQLAlchemy ORM
@@ -135,7 +135,7 @@ Receipt: Shows checkout summary
 
 ────────────────────────────────────────────
 
-🔗 References
+### 🔗 References
 Flask Docs – https://flask.palletsprojects.com/
 SQLAlchemy ORM – https://docs.sqlalchemy.org/
 Bootstrap 5 – https://getbootstrap.com/docs/5.3/
@@ -145,14 +145,14 @@ ChatGPT GPT-5 – https://chat.openai.com
 
 ────────────────────────────────────────────
 
-🧑‍💻 Author
+## 🧑‍💻 Author
 Ayush Sharma
 📧 20076564@mydbs.ie
 Built with ❤️ using Flask, PostgreSQL, and ChatGPT guidance.
 
 ────────────────────────────────────────────
 
-💡 Credits
+## 💡 Credits
 Hands-on development: Ayush Sharma
 AI Pair Programming: ChatGPT (GPT-5)
 Open-source libraries: Flask, SQLAlchemy, Bootstrap
