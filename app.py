@@ -184,15 +184,14 @@ def remove_cart_item(item_id):
     user = session.get("user")
     if not user:
         return jsonify({"error": "Login required"}), 401
-
     cart_item = Cart.query.filter_by(user_id=user["id"], item_id=item_id).first()
     if not cart_item:
         return jsonify({"error": "Item not found in cart"}), 404
-
     db.session.delete(cart_item)
     db.session.commit()
     return jsonify({"message": "Item removed"})
 
+# ---------------- Checkout + Receipt ---------------- #
 @app.route("/api/checkout", methods=["POST"])
 def checkout():
     user = session.get("user")
@@ -202,15 +201,34 @@ def checkout():
     if not cart_items:
         return jsonify({"error": "Cart is empty"}), 400
     total = 0
+    purchased = []
     for c in cart_items:
         item = Item.query.get(c.item_id)
         if not item or item.quantity < c.quantity:
             return jsonify({"error": f"Not enough {item.name} in stock"}), 400
         item.quantity -= c.quantity
-        total += item.price * c.quantity
+        subtotal = item.price * c.quantity
+        total += subtotal
+        purchased.append({
+            "name": item.name,
+            "quantity": c.quantity,
+            "price": item.price,
+            "subtotal": subtotal
+        })
         db.session.delete(c)
     db.session.commit()
-    return jsonify({"message": f"Checkout successful! Total: €{total:.2f}"})
+    session["receipt_data"] = {"items": purchased, "total": total}
+    return jsonify({"message": "Checkout successful", "redirect": "/receipt"})
+
+@app.route('/receipt')
+def receipt_page():
+    user = session.get('user')
+    if not user:
+        return redirect(url_for('login_page'))
+    receipt_data = session.pop('receipt_data', None)
+    if not receipt_data:
+        return redirect('/shop')
+    return render_template('receipt.html', receipt=receipt_data)
 
 # ---------------- Pages ---------------- #
 @app.route('/')
