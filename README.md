@@ -150,4 +150,8 @@ Built with ❤️ using Flask, PostgreSQL, and ChatGPT guidance.
 ## 💡 Credits  
 Hands-on development: Ayush Sharma  
 AI Pair Programming: ChatGPT (GPT-5)  
+https://chatgpt.com/c/690b1fa8-32ec-832c-8e55-e61e9296ba00 - fix to share link
+and other links
+also readme generation
+etc...
 Open-source libraries: Flask, SQLAlchemy, Bootstrap  
