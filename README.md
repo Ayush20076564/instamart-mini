@@ -4,6 +4,9 @@ A lightweight, responsive Flask + Bootstrap + PostgreSQL grocery web app demonst
 
 It’s simple, cloud-ready, and fully deployed on Render with automated database integration.  
 
+## Main Idea of Template - https://vibecodingwithfred.com/tutorials/shopping-flask/
+
+
 #  🧩 Features  
 
 ## 👩‍💻 User Features
@@ -84,6 +87,10 @@ instamart-mini/
    (open http://127.0.0.1:5000)
 
 
+
+
+
+### https://chatgpt.com/share/693ac9b8-8234-8010-bb76-90becc13cf7d -- Resolving Render issue ( version Mismatch )  
 ## ☁️ Deploying to Render  
 1. Push to GitHub  
 2. Log into Render.com  
@@ -127,7 +134,7 @@ Receipt: Shows checkout summary
 
 
 
-## 🔗 References  
+## 🔗 References  \
  
 [1] Flask Project, Flask Web Framework Documentation, Pallets Project, 2024. [Online]. Available: https://flask.palletsprojects.com/  
 [2] Bootstrap Team, Bootstrap 5 Documentation, 2024. [Online]. Available: https://getbootstrap.com/docs/5.3/  
@@ -139,7 +146,11 @@ Receipt: Shows checkout summary
 [8] National Institute of Standards and Technology (NIST), Recommendation for Password-Based Key Derivation Part 1: PBKDF2, NIST SP 800-132, 2010. [Online].  
 [9] Flask-CORS Developers, Cross Origin Resource Sharing Extension Docs, 2024. [Online]. Available: https://flask-cors.readthedocs.io/  
 [10] Pytest Project, Pytest Testing Framework Documentation, 2024. [Online]. Available: https://docs.pytest.org/  
-[11] OpenAI, ChatGPT (GPT-5) Technical Overview and Usage Guidelines, 2025. [Online]. Available: https://chat.openai.com/  
+[11] https://medium.com/@denis.mutunga/back-end-architecture-for-the-cart-system-7c222bb99ef3  
+[12] https://dev.to/francescoxx/build-a-crud-rest-api-in-python-using-flask-sqlalchemy-postgres-docker-28lo  
+[13] OpenAI, ChatGPT (GPT-5)  - https://chatgpt.com/share/693acb2a-77b4-8010-9cee-1f6fdccff3b4  
+[14] Readme Generation - https://chatgpt.com/share/693acb2a-77b4-8010-9cee-1f6fdccff3b4  
+ 
 
 
 ## 🧑‍💻 Author
@@ -148,7 +159,7 @@ Ayush Sharma
 Built with ❤️ using Flask, PostgreSQL, and ChatGPT guidance.  
 
 ## 💡 Credits  
-Hands-on development: Ayush Sharma  
+Hands-on development: Ayush Sharma  ( template/style from - vibecodingwithfred.com ( shopping cart)
 AI Pair Programming: ChatGPT (GPT-5)  
 https://chatgpt.com/
 Open-source libraries: Flask, SQLAlchemy, Bootstrap  
