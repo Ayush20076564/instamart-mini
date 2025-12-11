@@ -1,3 +1,5 @@
+## Main Idea of Template  - https://vibecodingwithfred.com/tutorials/shopping-flask/
+
 from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -9,6 +11,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "instamart-secret"
 
+## https://www.geeksforgeeks.org/python/connect-flask-to-a-database-with-flask-sqlalchemy/
 # ---------------- Database Config ---------------- #
 db_url = os.getenv("DATABASE_URL", "sqlite:///instamart.db")
 if db_url.startswith("postgres://"):  # Render uses postgres:// prefix
@@ -26,6 +29,8 @@ CORS(app, supports_credentials=True)
 print("✅ Using database:", app.config["SQLALCHEMY_DATABASE_URI"])
 
 # ---------------- Models ---------------- #
+## SQLAlchemy with python -  https://chatgpt.com/share/693acac8-9610-8010-9101-c65df0362d18
+## https://docs.sqlalchemy.org/en/20/orm/quickstart.html
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -55,6 +60,7 @@ def health_check():
         return jsonify({"status": "error", "details": str(e)}), 500
 
 # ---------------- Authentication ---------------- #
+## https://chatgpt.com/share/693acb2a-77b4-8010-9cee-1f6fdccff3b4
 @app.route("/api/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -97,6 +103,7 @@ def get_items():
         for i in items
     ])
 
+## https://stackoverflow.com/questions/58331469/adding-items-to-shopping-cart-python-flask
 @app.route("/api/items", methods=["POST"])
 def add_item():
     user = session.get("user")
@@ -128,6 +135,7 @@ def delete_item(item_id):
     return jsonify({"message": "Item deleted"})
 
 # ---------------- Cart ---------------- #
+## https://stackoverflow.com/questions/58331469/adding-items-to-shopping-cart-python-flask
 @app.route("/api/cart", methods=["POST"])
 def add_to_cart():
     user = session.get("user")

@@ -1,5 +1,7 @@
 const API = '/api';
 
+
+// https://chatgpt.com/share/693acb2a-77b4-8010-9cee-1f6fdccff3b4
 // ---------------- LOAD ITEMS ----------------
 async function loadItems() {
   try {
