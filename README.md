@@ -4,7 +4,7 @@ A lightweight, responsive Flask + Bootstrap + PostgreSQL grocery web app demonst
 
 It’s simple, cloud-ready, and fully deployed on Render with automated database integration.  
 
-## Main Idea of Template - https://vibecodingwithfred.com/tutorials/shopping-flask/
+# Main Idea of Template - https://vibecodingwithfred.com/tutorials/shopping-flask/
 
 
 #  🧩 Features  
@@ -90,7 +90,7 @@ instamart-mini/
 
 
 
-### https://chatgpt.com/share/693ac9b8-8234-8010-bb76-90becc13cf7d -- Resolving Render issue ( version Mismatch )  
+# https://chatgpt.com/share/693ac9b8-8234-8010-bb76-90becc13cf7d -- Resolving Render issue ( version Mismatch )  
 ## ☁️ Deploying to Render  
 1. Push to GitHub  
 2. Log into Render.com  
