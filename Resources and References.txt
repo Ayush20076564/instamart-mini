@@ -1,0 +1,23 @@
+https://vibecodingwithfred.com/tutorials/shopping-flask/ --- Main Idea and  Template
+
+https://www.geeksforgeeks.org/python/python-introduction-to-web-development-using-flask/ -- basic example of application
+
+https://www.geeksforgeeks.org/python/flask-app-routing/ -- App Routing 
+
+https://stackoverflow.com/questions/58331469/adding-items-to-shopping-cart-python-flask ( Shopping Cart )
+
+https://www.davidrambo.org/building-flower-catalog-pt4/
+
+https://flask.palletsprojects.com/en/stable/tutorial/templates/
+
+https://chatgpt.com/share/693ac9b8-8234-8010-bb76-90becc13cf7d -- Resolving Render issue ( version Mismatch )
+
+https://chatgpt.com/share/693acac8-9610-8010-9101-c65df0362d18    -- SQLAchemy with python
+
+https://chatgpt.com/share/693acb2a-77b4-8010-9cee-1f6fdccff3b4   -- Project Strcture and other Template-related prompts 
+
+https://medium.com/@denis.mutunga/back-end-architecture-for-the-cart-system-7c222bb99ef3
+
+https://dev.to/francescoxx/build-a-crud-rest-api-in-python-using-flask-sqlalchemy-postgres-docker-28lo
+
+https://www.geeksforgeeks.org/python/connect-flask-to-a-database-with-flask-sqlalchemy/ --- connect Database
